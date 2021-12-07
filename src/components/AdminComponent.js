@@ -21,13 +21,19 @@ function Admin(props) {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const [aux, setAux] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
   const [valueTeachers, setValueTeachers] = useState([
-    { ci: "", first_name: "", last_name: "", discipline: "" },
+    {
+      ci: "171588565",
+      first_name: "Admin_teacher",
+      last_name: "admin",
+      degree: "admin",
+    },
   ]);
   const [valueCourses, setValueCourses] = useState([
-    { ci: "", first_name: "", last_name: "", degree: "" },
+    { ci: "", first_name: "" },
   ]);
 
   useEffect(() => {
@@ -50,12 +56,10 @@ function Admin(props) {
       first_name: data.first_name,
       last_name: data.last_name,
       discipline: data.discipline,
-      courses: valueCourses,
       teachers: valueTeachers,
     };
-    console.log(request);
     axios
-      .post("http://localhost:3000/patient/", request)
+      .post("http://localhost:3000/student/save", request)
       .then((result) => {
         alert("Exito");
       })
@@ -68,7 +72,6 @@ function Admin(props) {
       last_name: data.last_name,
       degree: data.degree,
     };
-    console.log(request);
     axios
       .post("http://localhost:3000/teacher/save", request)
       .then((result) => {
@@ -151,7 +154,7 @@ function Admin(props) {
           <Col xs="4">
             <Autocomplete
               getItemValue={(item) =>
-                `${item.ci} ${item.first_name} ${item.last_name} ${item.discipline}`
+                `${item.ci} ${item.first_name} ${item.last_name} ${item.degree}`
               }
               items={teachers}
               renderItem={(item, isHighlighted) => (
@@ -163,22 +166,30 @@ function Admin(props) {
                   {`${item.ci} ${item.first_name} ${item.last_name}`}
                 </div>
               )}
-              value={valueTeachers.ci}
-              selectOnBlur={(val) => {
-                let aux = val.split(" ");
+              value={aux}
+              onSelect={(val) => {
+                let splitted = val.split(" ");
                 setValueTeachers([
                   ...valueTeachers,
                   {
-                    ci: aux[0],
-                    first_name: aux[1],
-                    last_name: aux[2],
-                    discipline: aux[3],
+                    ci: splitted[0],
+                    first_name: splitted[1],
+                    last_name: splitted[2],
+                    degree: splitted[3],
                   },
                 ]);
+                setAux(`${splitted[0]} ${splitted[1]}`);
+                console.log(valueTeachers);
               }}
             />
           </Col>
         </Row>
+
+        {valueTeachers.length === 1
+          ? ""
+          : valueTeachers.map((item) => (
+              <li key={item.ci}>{`${item.ci} ${item.first_name}`}</li>
+            ))}
         <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
           <Col xs="2">
             <Label />
