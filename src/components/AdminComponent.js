@@ -21,15 +21,19 @@ function Admin(props) {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [isOpenUser, setIsOpenUser] = useState(false);
-  const [isOpenTeacher, setIsOpenTeacher] = useState(false);
+  const [valueTeachers, setValueTeachers] = useState([
+    { ci: "", first_name: "", last_name: "", discipline: "" },
+  ]);
+  const [valueCourses, setValueCourses] = useState([
+    { ci: "", first_name: "", last_name: "", degree: "" },
+  ]);
 
   useEffect(() => {
     const fetch = async () => {
-      const data = await axios.get("http://localhost:3000/student/");
-      setStudents(data.data);
+      const data = await axios.get("http://localhost:3000/teacher/");
+      setTeachers(data.data);
     };
 
     const fetchcourse = async () => {
@@ -41,15 +45,13 @@ function Admin(props) {
   }, []);
 
   const onSubmit = (data) => {
-    console.log(data);
     const request = {
       ci: data.ci,
-      firstName: data.first_name,
-      surName: data.last_name,
-      age: data.age,
-      gender: data.gender,
-      students: {},
-      courses: {},
+      first_name: data.first_name,
+      last_name: data.last_name,
+      discipline: data.discipline,
+      courses: valueCourses,
+      teachers: valueTeachers,
     };
     console.log(request);
     axios
@@ -59,58 +61,227 @@ function Admin(props) {
       })
       .catch((error) => alert("error"));
   };
-
+  const onSubmitTeacher = (data) => {
+    const request = {
+      ci: data.ci,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      degree: data.degree,
+    };
+    console.log(request);
+    axios
+      .post("http://localhost:3000/teacher/save", request)
+      .then((result) => {
+        alert("Exito");
+      })
+      .catch((error) => alert("error"));
+  };
   return (
     <Container>
-      Agregar estudiante
       <Form
         onSubmit={handleSubmit(onSubmit)}
         style={{ "align-content": "center", "align-items": "center" }}
       >
         <Row>
           <Col>
-            <FormGroup>
-              <Label
-                style={{
-                  "font-family": " Georgia, serif",
-                  "font-size": "30px",
-                }}
-              >
-                Ingreso
-              </Label>
-            </FormGroup>
+            <Label
+              style={{
+                "font-family": " Georgia, serif",
+                "font-size": "30px",
+              }}
+            >
+              Ingreso de Estudiantes
+            </Label>
           </Col>
         </Row>
         <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
-          <Col>
+          <Col xs="4">
+            <Input
+              type="text"
+              name="ci"
+              placeholder="Cedula de Identidad"
+              {...register("ci")}
+            />
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
             <FormGroup>
               <Input
                 type="text"
-                id="username"
-                name="username"
-                placeholder="Usuario"
+                id="first_name"
+                name="first_name"
+                placeholder="Primer Nombre"
+                {...register("first_name")}
               />
             </FormGroup>
           </Col>
         </Row>
         <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
-          <Col>
+          <Col xs="4">
             <FormGroup>
               <Input
                 type="text"
-                id="password"
-                name="password"
-                placeholder="Contraseña"
-                {...register("password")}
+                id="last_name"
+                name="last_name"
+                placeholder="Apellido"
+                {...register("last_name")}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
+            <FormGroup>
+              <Input
+                type="text"
+                id="discipline"
+                name="discipline"
+                placeholder="Disciplina"
+                {...register("discipline")}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="2">
+            <Label />
+            Profesores
+          </Col>
+          <Col xs="4">
+            <Autocomplete
+              getItemValue={(item) =>
+                `${item.ci} ${item.first_name} ${item.last_name} ${item.discipline}`
+              }
+              items={teachers}
+              renderItem={(item, isHighlighted) => (
+                <div
+                  style={{
+                    background: isHighlighted ? "lightgray" : "white",
+                  }}
+                >
+                  {`${item.ci} ${item.first_name} ${item.last_name}`}
+                </div>
+              )}
+              value={valueTeachers.ci}
+              selectOnBlur={(val) => {
+                let aux = val.split(" ");
+                setValueTeachers([
+                  ...valueTeachers,
+                  {
+                    ci: aux[0],
+                    first_name: aux[1],
+                    last_name: aux[2],
+                    discipline: aux[3],
+                  },
+                ]);
+              }}
+            />
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="2">
+            <Label />
+            Cursos
+          </Col>
+          <Col xs="4">
+            <Autocomplete
+              getItemValue={(item) => `${item.level}`}
+              items={courses}
+              renderItem={(item, isHighlighted) => (
+                <div
+                  style={{
+                    background: isHighlighted ? "lightgray" : "white",
+                  }}
+                >
+                  {`${item.ci} ${item.first_name} ${item.last_name}`}
+                </div>
+              )}
+              value={valueCourses.ci}
+              selectOnBlur={(val) => setValueCourses([...valueCourses, val])}
+            />
+          </Col>
+        </Row>
+        <Row style={{ "padding-left": "40px", "padding-right": "10px" }}>
+          <Col xs="4">
+            <Input type="submit" color="light" block>
+              Ingresar
+            </Input>
+          </Col>
+        </Row>
+      </Form>
+      <Form
+        onSubmit={handleSubmit(onSubmitTeacher)}
+        style={{ "align-content": "center", "align-items": "center" }}
+      >
+        <Row>
+          <Col>
+            <Label
+              style={{
+                "font-family": " Georgia, serif",
+                "font-size": "30px",
+              }}
+            >
+              Ingreso de Profesores
+            </Label>
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
+            <Input
+              type="text"
+              name="ci"
+              placeholder="Cedula de Identidad"
+              {...register("ci")}
+            />
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
+            <FormGroup>
+              <Input
+                type="text"
+                id="first_name"
+                name="first_name"
+                placeholder="Primer Nombre"
+                {...register("first_name")}
               />
             </FormGroup>
           </Col>
         </Row>
 
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
+            <FormGroup>
+              <Input
+                type="text"
+                id="last_name"
+                name="last_name"
+                placeholder="Apellido"
+                {...register("last_name")}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+        <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Col xs="4">
+            <FormGroup>
+              <Input
+                type="text"
+                id="degree"
+                name="degree"
+                placeholder="Título Universitario"
+                {...register("degree")}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
         <Row style={{ "padding-left": "40px", "padding-right": "10px" }}>
-          <Button type="submit" value="submit" color="light" block>
-            Ingresar
-          </Button>
+          <Col xs="4">
+            <Input type="submit" color="light" block>
+              Ingresar
+            </Input>
+          </Col>
         </Row>
       </Form>
     </Container>

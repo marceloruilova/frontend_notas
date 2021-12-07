@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Modal,
-  Table,
+  CardTitle,
+  CardHeader,
   Container,
-  Col,
-  ModalFooter,
-  Button,
-  FormGroup,
+  CardBody,
+  CardText,
+  Card,
+  CardFooter,
   Form,
   Input,
 } from "reactstrap";
 import axios from "axios";
-import Autocomplete from "react-autocomplete";
 
-function Admin(props) {
+function Home(props) {
   const {
     register,
     handleSubmit,
@@ -33,11 +32,36 @@ function Admin(props) {
 
   return (
     <Container>
+      {console.log(students)}
       {students.map((item) => (
-        <li>{item}</li>
+        <Card style={{ width: "30%" }} key={item.id}>
+          <CardHeader
+            style={{
+              "background-color": "rgb(108, 187, 68)",
+              "border-color": "green",
+            }}
+          >
+            Alumno:{` ${item.first_name}`}
+          </CardHeader>
+          <CardBody style={{ "border-color": "green" }}>
+            <CardTitle>
+              Porcentaje de avance de cursos:
+              {item.courses.map((aux) => (
+                <li key={aux.id}>{aux.percentage}</li>
+              ))}
+              <span></span>
+            </CardTitle>
+            <CardText>
+              <p>Calificaciones:</p>
+              {item.califications.map((aux) => (
+                <li key={aux.id}>{aux.note}</li>
+              ))}
+            </CardText>
+          </CardBody>
+        </Card>
       ))}
     </Container>
   );
 }
 
-export default Admin;
+export default Home;
