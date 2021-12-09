@@ -7,7 +7,6 @@ import {
   Col,
   Container,
   Label,
-  Button,
   FormGroup,
   Form,
   Input,
@@ -22,6 +21,7 @@ function Admin(props) {
     formState: { errors },
   } = useForm();
   const [aux, setAux] = useState("");
+  const [aux2, setAux2] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
   const [valueTeachers, setValueTeachers] = useState([
@@ -32,8 +32,9 @@ function Admin(props) {
       degree: "admin",
     },
   ]);
+  //same logic for courses
   const [valueCourses, setValueCourses] = useState([
-    { ci: "", first_name: "" },
+    { name: "Courses", level: "-", percentage: 0 },
   ]);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ function Admin(props) {
     };
     fetch();
     fetchcourse();
-  }, []);
+  }, [aux, aux2]);
 
   const onSubmit = (data) => {
     const request = {
@@ -57,6 +58,7 @@ function Admin(props) {
       last_name: data.last_name,
       discipline: data.discipline,
       teachers: valueTeachers,
+      courses: valueCourses,
     };
     axios
       .post("http://localhost:3000/student/save", request)
@@ -179,7 +181,6 @@ function Admin(props) {
                   },
                 ]);
                 setAux(`${splitted[0]} ${splitted[1]}`);
-                console.log(valueTeachers);
               }}
             />
           </Col>
@@ -197,7 +198,9 @@ function Admin(props) {
           </Col>
           <Col xs="4">
             <Autocomplete
-              getItemValue={(item) => `${item.level}`}
+              getItemValue={(item) =>
+                `${item.name} ${item.level} ${item.percentage} `
+              }
               items={courses}
               renderItem={(item, isHighlighted) => (
                 <div
@@ -205,13 +208,29 @@ function Admin(props) {
                     background: isHighlighted ? "lightgray" : "white",
                   }}
                 >
-                  {`${item.ci} ${item.first_name} ${item.last_name}`}
+                  {`${item.name} ${item.level} ${item.percentage} `}
                 </div>
               )}
-              value={valueCourses.ci}
-              selectOnBlur={(val) => setValueCourses([...valueCourses, val])}
+              value={aux2}
+              onSelect={(val) => {
+                let splitted = val.split(" ");
+                setValueCourses([
+                  ...valueCourses,
+                  {
+                    name: splitted[0],
+                    level: splitted[1],
+                    percentage: splitted[2],
+                  },
+                ]);
+                setAux2(`${splitted[0]} ${splitted[1]}`);
+              }}
             />
           </Col>
+          {valueCourses.length === 1
+            ? ""
+            : valueCourses.map((item) => (
+                <li key={item.id}>{`${item.name} ${item.level}`}</li>
+              ))}
         </Row>
         <Row style={{ "padding-left": "40px", "padding-right": "10px" }}>
           <Col xs="4">

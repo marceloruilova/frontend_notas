@@ -31,10 +31,15 @@ function Home(props) {
   }, []);
 
   return (
-    <Container>
-      {console.log(students)}
+    <Container
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-around",
+      }}
+    >
       {students.map((item) => (
-        <Card style={{ width: "30%" }} key={item.id}>
+        <Card key={item.id} style={{ margin: "10px 0px 0px 0px" }}>
           <CardHeader
             style={{
               "background-color": "rgb(108, 187, 68)",
@@ -47,12 +52,12 @@ function Home(props) {
             <CardTitle>
               Porcentaje de avance de cursos:
               {item.courses.map((aux) => (
-                <li key={aux.id}>{aux.percentage}</li>
+                <li key={aux.id}>{aux.percentage + aux.name}</li>
               ))}
               <span></span>
             </CardTitle>
             <CardText>
-              <p>Calificaciones:</p>
+              Calificaciones Finales:
               {item.califications.map((aux) => (
                 <li key={aux.id}>{aux.note}</li>
               ))}

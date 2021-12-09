@@ -5,12 +5,16 @@ import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import {
-  Label,
+  Table,
   Row,
   Container,
   Col,
   FormGroup,
   Input,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
   Form,
   Button,
 } from "reactstrap";
@@ -18,109 +22,165 @@ import {
 function Calification() {
   const {
     handleSubmit,
+    register,
     formState: { errors },
   } = useForm();
-  const [value, setValue] = useState({
-    user: { username: "", password: "", role: "" },
-    jwt_token: "",
-  });
-  const [userName, setUsername] = useState();
-  const [password, setPassword] = useState();
-
-  const onSubmit = (data) => {
-    const request = {
-      username: userName,
-      password: password,
+  const [courses, setCourses] = useState([]);
+  const [itemAux, setItemAux] = useState();
+  const [califications, setCalifications] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [value, setValue] = useState({ name: "", level: "" });
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const niveles = ["1", "2", "3", "4"];
+  useEffect(() => {
+    const fetchcourse = async () => {
+      const data = await axios.get("http://localhost:3000/course/");
+      setCourses(data.data);
     };
+    fetchcourse();
+  }, [isFormOpen]);
+
+  const submitCalification = () => {
+    const request = { id: itemAux, califications: califications };
     axios
-      .post("http://localhost:3000/auth/login/", request)
-      .then((result) => {
-        if (result.data.jwt_token) {
-          localStorage.setItem("user", JSON.stringify(result.data));
-          setValue(result.data);
+      .post("http://localhost:3000/student/save", request)
+      .then((result) => console.log(result))
+      .catch((error) => console.log(error));
+  };
+
+  const searchStudents = () => {
+    const fetch = async () => {
+      const data = await axios.get(
+        "http://localhost:3000/course/bynameandlevel",
+        {
+          params: {
+            name: value.name,
+            level: value.level,
+          },
         }
-      })
-      .catch((error) => alert("Error"));
+      );
+      setStudents(data.data);
+      setIsFormOpen(true);
+    };
+    fetch();
   };
   return (
-    <div className="login-box-container">
-      <Container className="loginwidth">
-        <Form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ "align-content": "center", "align-items": "center" }}
-        >
-          <Row>
-            <Col>
-              <FontAwesomeIcon
-                icon={faUser}
-                style={{ "font-size": "90px", "align-items": "center" }}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label
-                  style={{
-                    "font-family": " Georgia, serif",
-                    "font-size": "30px",
-                  }}
+    <Container>
+      <Row>
+        <Col xs="1">
+          <UncontrolledDropdown>
+            <DropdownToggle caret>{value.name}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem header>Materias</DropdownItem>
+              {Object.keys(courses).map((item) => (
+                <DropdownItem
+                  onClick={(e) =>
+                    setValue({
+                      name: e.target.outerText,
+                      level: value.level,
+                    })
+                  }
                 >
-                  Ingreso
-                </Label>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
-            <Col xs="1">
-              <FontAwesomeIcon icon={faUser} />{" "}
-            </Col>
-            <Col>
-              <FormGroup>
-                <Input
-                  type="text"
-                  id="username"
-                  name="username"
-                  placeholder="Usuario"
-                  onBlur={(e) => setUsername(e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
-            <Col xs="1">
-              <FontAwesomeIcon icon={faLock} />{" "}
-            </Col>
-            <Col>
-              <FormGroup>
-                <Input
-                  type="text"
-                  id="password"
-                  name="password"
-                  placeholder="Contraseña"
-                  onBlur={(e) => setPassword(e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
-            <Col xs="1">
-              <FormGroup>
-                <Input type="radio" id="remember" name="remember" />
-              </FormGroup>
-            </Col>
-            <Col xs="2">
-              <Label style={{ "padding-left": "5px" }}>Recuérdame</Label>
-            </Col>
-          </Row>
-          <Row style={{ "padding-left": "40px", "padding-right": "10px" }}>
-            <Button type="submit" value="submit" color="light" block>
-              Ingresar
-            </Button>
-          </Row>
-        </Form>
-      </Container>
-    </div>
+                  {courses[item].name}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </Col>
+        <Col xs="1">
+          <UncontrolledDropdown>
+            <DropdownToggle caret>{value.level}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem header>Nivel</DropdownItem>
+              {niveles.map((item) => (
+                <DropdownItem
+                  onClick={(e) =>
+                    setValue({ name: value.name, level: e.target.outerText })
+                  }
+                >
+                  {item}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </Col>
+        <Col xs="1">
+          <Button
+            type="submit"
+            value="submit"
+            color="primary"
+            onClick={searchStudents}
+          >
+            Ingresar
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        {isFormOpen ? (
+          <Form onSubmit={handleSubmit()}>
+            <Table hover>
+              <thead>
+                <tr>
+                  <th>Nombre Estudiante</th>
+                  <th>CI</th>
+                  <th>Edad</th>
+                  <th>Discipline</th>
+                  <th>Calificación</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) =>
+                  student.students.map((item) => (
+                    <tr key={item.id}>
+                      <td>{`${item.first_name} ${item.last_name}`}</td>
+                      <td>{`${item.ci}`}</td>
+                      <td>{`${item.age}`}</td>
+                      <td>{`${item.discipline}`}</td>
+                      <td>
+                        <FormGroup>
+                          <Input
+                            type="number"
+                            id="calification"
+                            name="calification"
+                            placeholder="Click Afuera para Agregar"
+                            onBlur={(e) =>
+                              setCalifications([
+                                ...califications,
+                                e.target.value,
+                              ])
+                            }
+                            onClick={(e) => setItemAux(item.id)}
+                          />
+                          {item.id === itemAux
+                            ? califications.map((item) => <li>Nota:{item}</li>)
+                            : ""}
+                        </FormGroup>
+                      </td>
+                      <td>
+                        <FormGroup>
+                          <Button
+                            id="quantity"
+                            name="quantity"
+                            type="number"
+                            className="inputborder"
+                            onClick={submitCalification}
+                          >
+                            Add
+                          </Button>
+                        </FormGroup>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </Form>
+        ) : (
+          ""
+        )}
+      </Row>
+    </Container>
   );
 }
 export default Calification;
