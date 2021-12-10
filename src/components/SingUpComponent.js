@@ -1,6 +1,4 @@
-import { Navigate } from "react-router-dom";
 import React, { useState } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";

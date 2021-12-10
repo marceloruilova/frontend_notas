@@ -1,7 +1,5 @@
 import React from "react";
 import Login from "./LoginComponent";
-/*import Menu from './MenuComponent';
-import Contact from './ContactComponent';*/
 import Header from "./HeaderComponent";
 import Home from "./HomeComponent";
 import { Routes, Route } from "react-router-dom";
@@ -24,8 +22,4 @@ function Main() {
     </div>
   );
 }
-/*<Route exact path="/register" component={() => <User />} />
-        <Route exact path="/admin" component={() => <Admin />} />
-        <Route exact path="/home" component={() => <Home />} />
-        <Route exact path="/calification" component={() => <Calification />} />*/
 export default Main;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Modal,
-  Table,
   Row,
   Col,
   Container,
