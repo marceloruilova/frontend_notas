@@ -21,16 +21,14 @@ const Header = () => {
         <div className="container">
           <NavbarToggler onClick={toggle} />
           <Nav navbar>
-            <NavbarBrand className="mr-auto" href="/">
+            <NavbarBrand className="mr-auto" href="/login">
               <NavItem>
-                <NavLink to="/login">
-                  <img
-                    src={logo}
-                    height="30"
-                    width="41"
-                    alt="Ristorante Con Fusion"
-                  />
-                </NavLink>
+                <img
+                  src={logo}
+                  height="30"
+                  width="41"
+                  alt="Ristorante Con Fusion"
+                />
               </NavItem>
             </NavbarBrand>
             <Collapse isOpen={isOpen} navbar>

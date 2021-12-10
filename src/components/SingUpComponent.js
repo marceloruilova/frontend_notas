@@ -14,6 +14,7 @@ import {
   Form,
   Button,
 } from "reactstrap";
+import AuthService from "../services/auth-service";
 
 function SignUp() {
   const {
@@ -28,17 +29,10 @@ function SignUp() {
   const [password, setPassword] = useState();
   const [role, setRole] = useState();
 
-  const onSubmit = (data) => {
-    const request = {
-      username: userName,
-      password: password,
-      role: role,
-    };
-    axios
-      .post("http://localhost:3000/auth/login/", request)
+  const onSubmit = () => {
+    AuthService.signup(userName, password, role)
       .then((result) => {
         if (result.data.jwt_token) {
-          localStorage.setItem("user", JSON.stringify(result.data));
           setValue(result.data);
         }
       })
@@ -145,7 +139,6 @@ function SignUp() {
               </FormGroup>
             </Col>
           </Row>
-          {console.log(role)}
           <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
             <Col xs="1">
               <FormGroup>
@@ -163,9 +156,6 @@ function SignUp() {
           </Row>
         </Form>
       </Container>
-      {value.user.role === "ADMIN" ? <Navigate to="/signup" /> : ""}
-      {value.user.role === "TEACHER" ? <Navigate to="/calification" /> : ""}
-      {value.user.role === "STUDENT" ? <Navigate to="/home" /> : ""}
     </div>
   );
 }

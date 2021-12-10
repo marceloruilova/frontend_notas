@@ -7,11 +7,8 @@ import {
   CardBody,
   CardText,
   Card,
-  CardFooter,
-  Form,
-  Input,
 } from "reactstrap";
-import axios from "axios";
+import StudentService from "../services/student-service";
 
 function Home(props) {
   const {
@@ -23,8 +20,7 @@ function Home(props) {
 
   useEffect(() => {
     const fetch = async () => {
-      const data = await axios.get("http://localhost:3000/student/");
-      setStudents(data.data);
+      await StudentService.getAll().then((data) => setStudents(data.data));
     };
 
     fetch();
@@ -42,17 +38,17 @@ function Home(props) {
         <Card key={item.id} style={{ margin: "10px 0px 0px 0px" }}>
           <CardHeader
             style={{
-              "background-color": "rgb(108, 187, 68)",
-              "border-color": "green",
+              backgroundColor: "rgb(108, 187, 68)",
+              borderColor: "green",
             }}
           >
             Alumno:{` ${item.first_name}`}
           </CardHeader>
-          <CardBody style={{ "border-color": "green" }}>
+          <CardBody style={{ borderColor: "green" }}>
             <CardTitle>
               Porcentaje de avance de cursos:
               {item.courses.map((aux) => (
-                <li key={aux.id}>{aux.percentage + aux.name}</li>
+                <li key={aux.id}>{aux.percentage + " " + aux.name}</li>
               ))}
               <span></span>
             </CardTitle>

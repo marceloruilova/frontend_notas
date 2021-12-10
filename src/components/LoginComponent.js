@@ -14,6 +14,7 @@ import {
   Form,
   Button,
 } from "reactstrap";
+import AuthService from "../services/auth-service";
 
 function Login() {
   const {
@@ -27,16 +28,10 @@ function Login() {
   const [userName, setUsername] = useState();
   const [password, setPassword] = useState();
 
-  const onSubmit = (data) => {
-    const request = {
-      username: userName,
-      password: password,
-    };
-    axios
-      .post("http://localhost:3000/auth/login/", request)
+  const onSubmit = () => {
+    AuthService.login(userName, password)
       .then((result) => {
         if (result.data.jwt_token) {
-          localStorage.setItem("user", JSON.stringify(result.data));
           setValue(result.data);
         }
       })
@@ -47,13 +42,13 @@ function Login() {
       <Container className="loginwidth">
         <Form
           onSubmit={handleSubmit(onSubmit)}
-          style={{ "align-content": "center", "align-items": "center" }}
+          style={{ alignContent: "center", alignItems: "center" }}
         >
           <Row>
             <Col>
               <FontAwesomeIcon
                 icon={faUser}
-                style={{ "font-size": "90px", "align-items": "center" }}
+                style={{ fontSize: "90px", alignItems: "center" }}
               />
             </Col>
           </Row>
@@ -62,8 +57,8 @@ function Login() {
               <FormGroup>
                 <Label
                   style={{
-                    "font-family": " Georgia, serif",
-                    "font-size": "30px",
+                    fontFamily: " Georgia, serif",
+                    fontSize: "30px",
                   }}
                 >
                   Ingreso
@@ -71,7 +66,7 @@ function Login() {
               </FormGroup>
             </Col>
           </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Row style={{ paddingTop: "10px", paddingBottom: "10px" }}>
             <Col xs="1">
               <FontAwesomeIcon icon={faUser} />{" "}
             </Col>
@@ -87,7 +82,7 @@ function Login() {
               </FormGroup>
             </Col>
           </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Row style={{ paddingTop: "10px", paddingBottom: "10px" }}>
             <Col xs="1">
               <FontAwesomeIcon icon={faLock} />{" "}
             </Col>
@@ -103,17 +98,17 @@ function Login() {
               </FormGroup>
             </Col>
           </Row>
-          <Row style={{ "padding-top": "10px", "padding-bottom": "10px" }}>
+          <Row style={{ paddingTop: "10px", paddingBottom: "10px" }}>
             <Col xs="1">
               <FormGroup>
                 <Input type="radio" id="remember" name="remember" />
               </FormGroup>
             </Col>
             <Col xs="2">
-              <Label style={{ "padding-left": "5px" }}>Recuérdame</Label>
+              <Label style={{ paddingLeft: "5px" }}>Recuérdame</Label>
             </Col>
           </Row>
-          <Row style={{ "padding-left": "40px", "padding-right": "10px" }}>
+          <Row style={{ paddingLeft: "40px", paddingRight: "10px" }}>
             <Button type="submit" value="submit" color="light" block>
               Ingresar
             </Button>

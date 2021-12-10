@@ -1,9 +1,6 @@
-import { Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import {
   Table,
   Row,
@@ -18,34 +15,35 @@ import {
   Form,
   Button,
 } from "reactstrap";
+import StudentService from "../services/student-service";
+import CourseService from "../services/course-service";
 
 function Calification() {
   const {
     handleSubmit,
-    register,
     formState: { errors },
   } = useForm();
+
   const [courses, setCourses] = useState([]);
   const [itemAux, setItemAux] = useState();
   const [califications, setCalifications] = useState([]);
   const [students, setStudents] = useState([]);
-  const [value, setValue] = useState({ name: "", level: "" });
+  const [value, setValue] = useState({ name: "Materia", level: "Nivel" });
   const [isFormOpen, setIsFormOpen] = useState(false);
   const niveles = ["1", "2", "3", "4"];
+
   useEffect(() => {
     const fetchcourse = async () => {
-      const data = await axios.get("http://localhost:3000/course/");
-      setCourses(data.data);
+      await CourseService.getAll().then((result) => setCourses(result.data));
     };
     fetchcourse();
   }, [isFormOpen]);
 
   const submitCalification = () => {
     const request = { id: itemAux, califications: califications };
-    axios
-      .post("http://localhost:3000/student/save", request)
-      .then((result) => console.log(result))
-      .catch((error) => console.log(error));
+    StudentService.postStudent(request)
+      .then((result) => alert(result))
+      .catch((error) => alert(error));
   };
 
   const searchStudents = () => {
@@ -66,8 +64,8 @@ function Calification() {
   };
   return (
     <Container>
-      <Row>
-        <Col xs="1">
+      <Row style={{ padding: "20px" }}>
+        <Col xs="2">
           <UncontrolledDropdown>
             <DropdownToggle caret>{value.name}</DropdownToggle>
             <DropdownMenu>
@@ -87,7 +85,7 @@ function Calification() {
             </DropdownMenu>
           </UncontrolledDropdown>
         </Col>
-        <Col xs="1">
+        <Col xs="2">
           <UncontrolledDropdown>
             <DropdownToggle caret>{value.level}</DropdownToggle>
             <DropdownMenu>
